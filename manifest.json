@@ -1,0 +1,30 @@
+{
+    "manifest_version": "1",
+    "api_version": "1",
+    "name": "Timer",
+    "description": "Countdown timer with notifications",
+    "developer_name": "Aleksandr Gornostal",
+    "icon": "images/timer.png",
+    "screenshot": "images/screenshot.png",
+    "options": {
+        "query_debounce": 0.05
+    },
+    "preferences": [
+        {
+            "id": "main_kw",
+            "type": "keyword",
+            "default_value": "ti",
+        },
+        {
+            "id": "name",
+            "type": "input",
+            "default_value": "?",
+            "description": "..."
+        },
+        {
+            "id": "description",
+            "type": "text",
+            "description": "About you"
+        }
+    ]
+}
