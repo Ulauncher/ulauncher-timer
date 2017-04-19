@@ -6,12 +6,13 @@
     "developer_name": "Aleksandr Gornostal",
     "icon": "images/timer.png",
     "options": {
-        "query_debounce": 0.05
+        "query_debounce": 0.1
     },
     "preferences": [
         {
             "id": "keyword",
             "type": "keyword",
+            "name": "My Timer",
             "default_value": "ti"
         }
     ]
