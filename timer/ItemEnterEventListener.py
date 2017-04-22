@@ -1,5 +1,5 @@
 import logging
-from ulauncher.extension.client.EventListener import EventListener
+from ulauncher.api.client.EventListener import EventListener
 
 logger = logging.getLogger(__name__)
 

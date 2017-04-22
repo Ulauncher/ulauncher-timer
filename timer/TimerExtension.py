@@ -9,8 +9,8 @@ gi.require_version('Notify', '0.7')
 from gi.repository import Notify
 from threading import Timer
 
-from ulauncher.extension.shared.event import KeywordQueryEvent, ItemEnterEvent
-from ulauncher.extension.client.Extension import Extension
+from ulauncher.api.shared.event import KeywordQueryEvent, ItemEnterEvent
+from ulauncher.api.client.Extension import Extension
 from .ExtensionKeywordListener import ExtensionKeywordListener
 from .ItemEnterEventListener import ItemEnterEventListener
 

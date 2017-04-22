@@ -1,9 +1,9 @@
-from ulauncher.extension.client.EventListener import EventListener
-from ulauncher.extension.shared.result_item.ExtensionResultItem import ExtensionResultItem
-from ulauncher.result_list.item_action.RenderResultListAction import RenderResultListAction
-from ulauncher.result_list.item_action.CloseAppAction import CloseAppAction
-from ulauncher.result_list.item_action.DoNothingAction import DoNothingAction
-from ulauncher.result_list.item_action.ExtensionCustomAction import ExtensionCustomAction
+from ulauncher.api.client.EventListener import EventListener
+from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
+from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
+from ulauncher.api.shared.action.CloseAppAction import CloseAppAction
+from ulauncher.api.shared.action.DoNothingAction import DoNothingAction
+from ulauncher.api.shared.action.ExtensionCustomAction import ExtensionCustomAction
 from .query_parser import parse_query, ParseQueryError
 
 
