@@ -1,7 +1,6 @@
 from ulauncher.api.client.EventListener import EventListener
 from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
 from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
-from ulauncher.api.shared.action.CloseAppAction import CloseAppAction
 from ulauncher.api.shared.action.DoNothingAction import DoNothingAction
 from ulauncher.api.shared.action.ExtensionCustomAction import ExtensionCustomAction
 from .query_parser import parse_query, ParseQueryError
