@@ -28,7 +28,7 @@ def parse_query(query, default_text='Time is up!'):
 
         return (time_sec, time_arg, message)
     except Exception as e:
-        raise ParseQueryError(e.message)
+        raise ParseQueryError(str(e))
 
 
 class ParseQueryError(Exception):
