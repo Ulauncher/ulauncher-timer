@@ -26,6 +26,7 @@ class TimerExtension(Extension):
     ICON_FILE = 'images/timer.png'
 
     timer = None
+    timer_start_time = None
 
     def __init__(self):
         super(TimerExtension, self).__init__()
