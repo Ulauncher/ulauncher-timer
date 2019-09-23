@@ -23,6 +23,7 @@ class ExtensionKeywordListener(EventListener):
 
     def on_event(self, event, extension):
         query = event.get_argument()
+        time_left = self.get_timer()
         if query:
             try:
                 time_sec, delta, message = parse_query(query)
@@ -33,7 +34,7 @@ class ExtensionKeywordListener(EventListener):
                 return self.get_action_to_render(name="Incorrect request",
                                                  description="Example: ti 10m Eggs are ready!")
         elif time_left is not None:
-            timediff_str = format_timediff(self.get_timer())
+            timediff_str = format_timediff(time_left)
             return self.get_action_to_render(name="A Timer is running",
                                              description= "Time left: %s" % timediff_str)
         else:
