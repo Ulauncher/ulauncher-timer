@@ -31,7 +31,7 @@ class TimerExtension(Extension):
     def __init__(self):
         super(TimerExtension, self).__init__()
         self.icon_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), self.ICON_FILE)
-        self.subscribe(KeywordQueryEvent, ExtensionKeywordListener(self.ICON_FILE, lambda : self.get_time_left()))
+        self.subscribe(KeywordQueryEvent, ExtensionKeywordListener(self.ICON_FILE, self.get_time_left))
         self.subscribe(ItemEnterEvent, ItemEnterEventListener())
 
     def set_timer(self, delay, text):
