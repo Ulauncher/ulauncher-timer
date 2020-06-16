@@ -9,21 +9,25 @@ from .timediff_formatter import format_timediff
 
 class ExtensionKeywordListener(EventListener):
 
-    def __init__(self, icon_file, get_timer):
+    def __init__(self, icon_file, get_timers):
         self.icon_file = icon_file
-        self.get_timer = get_timer
+        self.get_timers = get_timers
 
     def get_action_to_render(self, name, description, on_enter=None):
+        item = self.get_item_to_render(description, name, on_enter)
+
+        return RenderResultListAction([item])
+
+    def get_item_to_render(self, description, name, on_enter=None):
         item = ExtensionResultItem(name=name,
                                    description=description,
                                    icon=self.icon_file,
                                    on_enter=on_enter or DoNothingAction())
-
-        return RenderResultListAction([item])
+        return item
 
     def on_event(self, event, extension):
         query = event.get_argument()
-        time_left = self.get_timer()
+        time_lefts = self.get_timers()
         if query:
             try:
                 time_sec, delta, message = parse_query(query)
@@ -33,10 +37,11 @@ class ExtensionKeywordListener(EventListener):
             except ParseQueryError:
                 return self.get_action_to_render(name="Incorrect request",
                                                  description="Example: ti 10m Eggs are ready!")
-        elif time_left is not None:
-            timediff_str = format_timediff(time_left)
-            return self.get_action_to_render(name="A Timer is running",
-                                             description= "Time left: %s" % timediff_str)
+        elif time_lefts is not None and len(time_lefts) > 0:
+            items = [self.get_item_to_render(name=timer_name,
+                                             description="Time left: %s" % format_timediff(timediff_str))
+                     for timer_name, timediff_str in time_lefts]
+            return RenderResultListAction(items)
         else:
             return self.get_action_to_render(name="Type in your query",
                                              description="Example: ti 10m Eggs are ready!")

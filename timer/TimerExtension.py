@@ -1,5 +1,7 @@
 import os
 import subprocess
+from collections import namedtuple
+
 import gi
 import logging
 
@@ -17,7 +19,12 @@ from ulauncher.api.client.Extension import Extension
 from .ExtensionKeywordListener import ExtensionKeywordListener
 from .ItemEnterEventListener import ItemEnterEventListener
 
+from uuid import uuid4
+
 logger = logging.getLogger(__name__)
+
+
+TimerDef = namedtuple('TimerDef', ('timer', 'text', 'start_time'))
 
 
 class TimerExtension(Extension):
@@ -25,34 +32,48 @@ class TimerExtension(Extension):
     SOUND_FILE = "/usr/share/sounds/freedesktop/stereo/complete.oga"
     ICON_FILE = 'images/timer.png'
 
-    timer = None
-    timer_start_time = None
+    timers = dict()
 
     def __init__(self):
         super(TimerExtension, self).__init__()
         self.icon_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), self.ICON_FILE)
-        self.subscribe(KeywordQueryEvent, ExtensionKeywordListener(self.ICON_FILE, self.get_time_left))
+        self.subscribe(KeywordQueryEvent, ExtensionKeywordListener(self.ICON_FILE, self.get_time_left_all))
         self.subscribe(ItemEnterEvent, ItemEnterEventListener())
 
     def set_timer(self, delay, text):
-        self.timer = Timer(delay, self.show_notification, args=[text])
-        self.timer.setDaemon(True)
-        self.timer_start_time = datetime.now()
-        self.timer.start()
+        timer_id = uuid4()
+        timer = Timer(delay, self.on_timer_ended, args=[text, timer_id])
+        timer.setDaemon(True)
+        timer_start_time = datetime.now()
+        self.timers[timer_id] = (TimerDef(timer=timer, text=text, start_time=timer_start_time))
+        timer.start()
 
-    def stop_timer(self):
-        if self.timer:
-            self.timer.stop()
-            self.timer_start_time = None
-            self.timer = None
+    def stop_timer(self, timer_id):
+        if timer_id not in self.timers:
+            return
 
-    def get_time_left(self):
-        if self.timer_start_time and self.timer:
-            interval = timedelta(seconds = self.timer.interval)
-            end = self.timer_start_time + interval
+        self.timers[timer_id].timer.cancel()
+        del self.timers[timer_id]
+
+    def get_time_left(self, timer_id):
+        if timer_id not in self.timers:
+            return None
+
+        timer_def = self.timers[timer_id]
+        if timer_def:
+            interval = timedelta(seconds = timer_def.timer.interval)
+            end = timer_def.start_time + interval
             return end - datetime.now()
         else:
             return None
+
+    def get_time_left_all(self):
+        return [(timer_def.text, self.get_time_left(tid)) for tid, timer_def in self.timers.items()]
+
+    def on_timer_ended(self, text, timer_id):
+        logger.debug("Timer '%s' ('%s') ended" % (timer_id, text))
+        self.show_notification(text)
+        self.stop_timer(timer_id)
 
     def show_notification(self, text, make_sound=True):
         logger.debug('Show notification: %s' % text)
