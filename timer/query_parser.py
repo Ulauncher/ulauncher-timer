@@ -45,7 +45,7 @@ def parse_query(query, default_text='Time is up!'):
         time_arg = query.split(' ')[0]
         assert time_arg, "Incorrect time"
         hours, minutes, seconds = parse_time_str(time_arg)
-        time_sec = hours*60*60 + minutes*60 + seconds
+        time_sec = hours * 60 * 60 + minutes * 60 + seconds
 
         message = ' '.join(query.split(' ')[1:]).strip()
         message = message or default_text
