@@ -36,7 +36,7 @@ class ExtensionKeywordListener(EventListener):
         elif time_left is not None:
             timediff_str = format_timediff(time_left)
             return self.get_action_to_render(name="A Timer is running",
-                                             description= "Time left: %s" % timediff_str)
+                                             description="Time left: %s" % timediff_str)
         else:
             return self.get_action_to_render(name="Type in your query",
                                              description="Example: ti 10m Eggs are ready!")

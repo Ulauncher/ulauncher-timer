@@ -48,7 +48,7 @@ class TimerExtension(Extension):
 
     def get_time_left(self):
         if self.timer_start_time and self.timer:
-            interval = timedelta(seconds = self.timer.interval)
+            interval = timedelta(seconds=self.timer.interval)
             end = self.timer_start_time + interval
             return end - datetime.now()
         else:

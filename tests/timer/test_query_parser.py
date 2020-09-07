@@ -24,7 +24,7 @@ def test_parse_query__1h_2s_hello__correct_result_returned():
 
 
 def test_parse_query__2m_5s__is_correct_query():
-    assert parse_query('2m5s') == (2*60 + 5, '2m5s', 'Time is up!')
+    assert parse_query('2m5s') == (2 * 60 + 5, '2m5s', 'Time is up!')
 
 
 def test_pasrse_query__is_case_insensitive():
