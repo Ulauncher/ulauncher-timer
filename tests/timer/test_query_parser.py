@@ -1,6 +1,6 @@
 import pytest
 from timer.query_parser import parse_query, ParseQueryError
-from util import patch_now
+from tests.timer.util import patch_now
 
 
 def test_parse_query__5m_hello_world__correct_result_returned():
