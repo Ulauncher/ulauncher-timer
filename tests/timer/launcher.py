@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from ulauncher.api.shared.event import KeywordQueryEvent
+from ulauncher.api.shared.event import ItemEnterEvent, KeywordQueryEvent
 from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
 from ulauncher.search.Query import Query
 
@@ -11,6 +11,7 @@ class TimerLauncher:
 
     def __init__(self):
         self.timer = TimerExtension()
+        self.timer.icon_path = "unknown"
         self.client = self.timer._client = TestClient()
 
     def __enter__(self):
@@ -18,8 +19,9 @@ class TimerLauncher:
 
     def __exit__(self, *exc_info):
         tx = self.timer
-        tx.stop_timer()
-        assert not tx.timer, tx.timer
+        for timer in tx.get_timers():
+            tx.stop_timer(timer)
+        assert not tx.timers, tx.timers
 
     def query(self, query: str):
         query = Query("ti " + query)
@@ -27,6 +29,10 @@ class TimerLauncher:
         self.timer.trigger_event(query_event)
         results = self.client.response.action.result_list
         return [ResultItem(item, query, self) for item in results]
+
+    def enter(self, item: "ResultItem"):
+        action = item.item.on_enter(item.query)
+        self.timer.trigger_event(ItemEnterEvent(action._data))
 
 
 class TestClient:
@@ -55,3 +61,6 @@ class ResultItem:
     @property
     def description(self):
         return self.item.get_description(self.query)
+
+    def enter(self):
+        self.launcher.enter(self)

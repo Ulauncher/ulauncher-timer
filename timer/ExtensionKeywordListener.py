@@ -9,9 +9,9 @@ from .timediff_formatter import format_timediff
 
 class ExtensionKeywordListener(EventListener):
 
-    def __init__(self, icon_file, get_timer):
+    def __init__(self, icon_file, get_timers):
         self.icon_file = icon_file
-        self.get_timer = get_timer
+        self.get_timers = get_timers
 
     def get_action_to_render(self, name, description, on_enter=None):
         item = ExtensionResultItem(name=name,
@@ -21,9 +21,16 @@ class ExtensionKeywordListener(EventListener):
 
         return RenderResultListAction([item])
 
+    def get_timer_item(self, timer, on_enter=None):
+        time_remaining = format_timediff(timer.time_remaining)
+        return ExtensionResultItem(name=timer.name,
+                                   description=f"Time left: {time_remaining}",
+                                   icon=self.icon_file,
+                                   on_enter=on_enter or DoNothingAction())
+
     def on_event(self, event, extension):
         query = event.get_argument()
-        time_left = self.get_timer()
+        timers = self.get_timers()
         if query:
             try:
                 time_sec, delta, message = parse_query(query)
@@ -33,10 +40,9 @@ class ExtensionKeywordListener(EventListener):
             except ParseQueryError:
                 return self.get_action_to_render(name="Incorrect request",
                                                  description="Example: ti 10m Eggs are ready!")
-        elif time_left is not None:
-            timediff_str = format_timediff(time_left)
-            return self.get_action_to_render(name="A Timer is running",
-                                             description="Time left: %s" % timediff_str)
+        elif timers:
+            items = [self.get_timer_item(t) for t in timers]
+            return RenderResultListAction(items)
         else:
             return self.get_action_to_render(name="Type in your query",
                                              description="Example: ti 10m Eggs are ready!")

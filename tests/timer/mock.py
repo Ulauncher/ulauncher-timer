@@ -2,6 +2,8 @@ import os
 import sys
 from os.path import abspath, dirname, exists, join
 
+from .notifications import MockNotify
+
 installed = False
 
 
@@ -33,10 +35,6 @@ def get_ulauncher_path():
 class Gi:
     def require_version(what, version):
         pass
-
-
-class MockNotify:
-    pass
 
 
 class GiRepository:
