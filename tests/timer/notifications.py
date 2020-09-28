@@ -1,10 +1,13 @@
 from contextlib import contextmanager
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 
 class MockNotify:
     def init(name):
         pass
+
+    def is_initted():
+        return False
 
     @dataclass
     class Notification:
@@ -23,6 +26,11 @@ class MockNotify:
 
         def __repr__(self):
             return f"<{self.text}>"
+
+        def update(self, name, text="", icon=None):
+            self.name = name
+            self.text = text
+            self.icon_path = icon
 
         def show(self):
             assert hasattr(MockNotify, "notifications"), \

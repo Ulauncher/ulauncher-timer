@@ -18,13 +18,19 @@ class Timer:
             callback(self)
 
         self.name = name
-        self.timer = TimerThread(run_seconds, on_end)
-        self.timer.setDaemon(True)
+        self.timer = self._get_timer(run_seconds, on_end)
         self.end_time = datetime.now() + timedelta(seconds=run_seconds)
+        self.notification = None
+
+    @staticmethod
+    def _get_timer(run_seconds, callback):
+        timer = TimerThread(run_seconds, callback)
+        timer.setDaemon(True)
+        return timer
 
     def start(self):
         self.timer.start()
-        self.notify('Timer is set', make_sound=False)
+        self.notify('Timer is set', sound=False)
         log.debug('Timer set for %s', self.end_time)
 
     def stop(self):
@@ -34,9 +40,18 @@ class Timer:
     def time_remaining(self):
         return self.end_time - datetime.now()
 
-    def notify(self, text, make_sound=True):
+    def notify(self, text, sound=True):
         log.debug('Show notification: %s' % text)
-        Notify.init("TimerExtension")
-        Notify.Notification.new("Timer", text, get_icon_path()).show()
-        if make_sound:
+        self._show_notification("Timer", text)
+        if sound:
             play_sound()
+
+    def _show_notification(self, title, body):
+        if not Notify.is_initted():
+            Notify.init("TimerExtension")
+        icon = get_icon_path()
+        if self.notification is None:
+            self.notification = Notify.Notification.new(title, body, icon)
+        else:
+            self.notification.update(title, body, icon)
+        self.notification.show()
