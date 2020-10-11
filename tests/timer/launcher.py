@@ -21,6 +21,7 @@ class TimerLauncher:
         tx = self.timer
         for timer in tx.get_timers():
             tx.stop_timer(timer)
+        tx.quit()
         assert not tx.timers, tx.timers
 
     def query(self, query: str):

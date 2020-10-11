@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime, timedelta
-from threading import Timer as TimerThread
 
 from gi.repository import Notify
 
@@ -12,36 +11,34 @@ log = logging.getLogger(__name__)
 class Timer:
 
     def __init__(self, run_seconds, name, callback):
-        def on_end():
-            self.notify(name)
-            self.timer = None
-            callback(self)
-
+        self.run_seconds = run_seconds
         self.name = name
-        self.timer = self._get_timer(run_seconds, on_end)
+        self.callback = callback
+        self.tag = None
         self.end_time = datetime.now() + timedelta(seconds=run_seconds)
         self.notification = None
 
-    @staticmethod
-    def _get_timer(run_seconds, callback):
-        timer = TimerThread(run_seconds, callback)
-        timer.setDaemon(True)
-        return timer
+    def start(self, loop):
+        def on_end():
+            self.notify(self.name)
+            self.callback(self)
+            self.tag = None
 
-    def start(self):
-        self.timer.start()
+        self.tag = loop.call_after_delay(self.run_seconds, on_end)
         self.notify('Timer is set', sound=False)
         log.debug('Timer set for %s', self.end_time)
 
-    def stop(self):
-        self.timer.cancel()
+    def stop(self, loop):
+        if self.tag is not None:
+            loop.cancel_callback(self.tag)
+            self.tag = None
 
     @property
     def time_remaining(self):
         return self.end_time - datetime.now()
 
     def notify(self, text, sound=True):
-        log.debug('Show notification: %s' % text)
+        log.debug('Notify: %s', text)
         self._show_notification("Timer", text)
         if sound:
             play_sound()

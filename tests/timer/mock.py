@@ -37,9 +37,27 @@ class Gi:
         pass
 
 
+class MockGtk:
+    def main():
+        pass
+
+    def main_quit():
+        pass
+
+
+class MockGLib:
+
+    def timeout_add_seconds(interval, function, *data):
+        pass
+
+    def source_remove(tag):
+        pass
+
+
 class GiRepository:
     Notify = MockNotify
-    GLib = None
+    GLib = MockGLib
+    Gtk = MockGtk
 
 
 class ulauncher_config:

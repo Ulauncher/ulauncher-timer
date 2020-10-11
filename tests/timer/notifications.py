@@ -6,6 +6,9 @@ class MockNotify:
     def init(name):
         pass
 
+    def uninit():
+        pass
+
     def is_initted():
         return False
 
@@ -35,7 +38,7 @@ class MockNotify:
         def show(self):
             assert hasattr(MockNotify, "notifications"), \
                 "tests.timer.notifications.notify context is missing"
-            MockNotify.notifications.append(self)
+            MockNotify.notifications.append(repr(self))
 
 
 @contextmanager
