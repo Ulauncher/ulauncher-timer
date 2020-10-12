@@ -11,6 +11,7 @@ class TimerLauncher:
 
     def __init__(self):
         self.timer = TimerExtension()
+        self.timer.preferences["persistent"] = False
         self.timer.icon_path = "unknown"
         self.client = self.timer._client = TestClient()
 

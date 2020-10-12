@@ -31,7 +31,8 @@ class TimerExtension(Extension):
 
     def set_timer(self, delay, text):
         log.debug("add timer %s %s", delay, text)
-        timer = Timer(delay, text, self.on_timer_end)
+        persistent = self.preferences["persistent"]
+        timer = Timer(delay, text, self.on_timer_end, persistent)
         timer.start(self.loop)
         self.timers.add(timer)
 

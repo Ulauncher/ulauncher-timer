@@ -11,8 +11,18 @@
         {
             "id": "keyword",
             "type": "keyword",
-            "name": "My Timer",
+            "name": "Timer",
             "default_value": "ti"
+        },
+        {
+            "id": "persistent",
+            "type": "select",
+            "name": "Alert style",
+            "default_value": false,
+            "options": [
+                {"text": "Alert once", "value": false},
+                {"text": "Alert periodically until closed", "value": true}
+            ]
         }
     ]
 }

@@ -9,13 +9,13 @@ class TimerLoop:
         self.thread = Thread(target=Gtk.main)
         self.thread.start()
 
-    def call_after_delay(self, delay_seconds, callback):
+    def call_after_delay(self, delay_seconds, callback, *args):
         """Call function after delay
 
         :returns: callback tag, which can be passed to `cancel_callback`.
         """
         def _callback():
-            callback()
+            callback(*args)
             return False
 
         return GLib.timeout_add_seconds(delay_seconds, _callback)
