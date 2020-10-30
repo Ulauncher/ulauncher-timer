@@ -3,20 +3,20 @@ from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
 from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
 from ulauncher.api.shared.action.DoNothingAction import DoNothingAction
 from ulauncher.api.shared.action.ExtensionCustomAction import ExtensionCustomAction
+from .media import ICON_FILE
 from .query_parser import parse_query, ParseQueryError
 from .timediff_formatter import format_timediff
 
 
 class ExtensionKeywordListener(EventListener):
 
-    def __init__(self, icon_file, get_timers):
-        self.icon_file = icon_file
+    def __init__(self, get_timers):
         self.get_timers = get_timers
 
     def get_action_to_render(self, name, description, on_enter=None):
         item = ExtensionResultItem(name=name,
                                    description=description,
-                                   icon=self.icon_file,
+                                   icon=ICON_FILE,
                                    on_enter=on_enter or DoNothingAction())
 
         return RenderResultListAction([item])
@@ -25,7 +25,7 @@ class ExtensionKeywordListener(EventListener):
         time_remaining = format_timediff(timer.time_remaining)
         return ExtensionResultItem(name=timer.name,
                                    description=f"Time left: {time_remaining}",
-                                   icon=self.icon_file,
+                                   icon=ICON_FILE,
                                    on_enter=on_enter or DoNothingAction())
 
     def on_event(self, event, extension):
