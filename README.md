@@ -3,6 +3,30 @@
 
 <img aligh="center" src="http://i.imgur.com/bc2bzZ8.png">
 
+## Basic usage
+
+### Time formats
+
+The timer extension accepts times in two formats:
+
+- Time duration in hours, minutes, and/or seconds
+- Time of day (absolute time in the next 24 hours)
+
+#### Examples
+
+##### Time duration
+- `3m` = 3 minutes
+- `5h` = 5 hours
+- `2m30s` = 2 minutes and 30 seconds
+
+##### Time of day
+- `1:30pm` = 1:30 PM
+- `720a` = 7:20 AM
+
+### Persistent timer mode
+
+Choose _Alert periodically until closed_ in settings to make timers harder to
+ignore. Close the timer notification to stop persistent timer notifications.
 
 ## Running tests
 
