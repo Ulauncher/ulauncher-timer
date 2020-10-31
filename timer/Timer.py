@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from gi.repository import Notify
 
 from .media import get_icon_path, play_sound
+from .timediff_formatter import format_timediff, round_time_units
 
 log = logging.getLogger(__name__)
 
@@ -31,7 +32,7 @@ class Timer:
 
     def start(self, loop):
         def on_end(on_close=None):
-            self.notify(self.name, on_close=on_close)
+            self.notify(self.name, self.time_since_end, on_close=on_close)
             if self.persistent:
                 interval = self.intervals.pop() if self.intervals else 60
                 self.tag = loop.call_after_delay(interval, on_end)
@@ -45,7 +46,8 @@ class Timer:
             self.stop(loop)
 
         self.tag = loop.call_after_delay(self.run_seconds, on_end, on_close)
-        self.notify('Timer is set', sound=False)
+        message = f"{self.name} at {self.end_time.strftime('%-I:%M %p')}"
+        self.notify(message, sound=False)
         log.debug('Timer set for %s', self.end_time)
 
     def stop(self, loop):
@@ -57,9 +59,16 @@ class Timer:
     def time_remaining(self):
         return self.end_time - datetime.now()
 
-    def notify(self, text, sound=True, on_close=None):
-        log.debug('Notify: %s', text)
-        self._show_notification("Timer", text, on_close)
+    @property
+    def time_since_end(self):
+        if self.end_time + timedelta(seconds=5) >= datetime.now():
+            return ""
+        elapsed = round_time_units(datetime.now() - self.end_time)
+        return f"{format_timediff(elapsed)} ago"
+
+    def notify(self, title, body="", sound=True, on_close=None):
+        log.debug('Notify: %s %s', title, body)
+        self._show_notification(title, body, on_close)
         if sound:
             play_sound()
 

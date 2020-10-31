@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 class MockNotify:
@@ -17,7 +17,7 @@ class MockNotify:
         name: str
         text: str
         icon_path: str
-        on_closed = []
+        on_closed: list = field(default_factory=list)
 
         @classmethod
         def new(cls, *args, **kw):
@@ -29,7 +29,8 @@ class MockNotify:
             return NotImplemented
 
         def __repr__(self):
-            return f"<{self.text}>"
+            body = f" / {self.text}" if self.text else ""
+            return f"<{self.name}{body}>"
 
         def update(self, name, text="", icon=None):
             self.name = name

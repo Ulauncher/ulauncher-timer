@@ -29,7 +29,10 @@ def test_5p_timer(launcher):
 def test_review_timers(launcher, notifications):
     launcher.query("3s start")[0].enter()
     launcher.query("5m")[0].enter()
-    assert notifications == ["<Timer is set>", "<Timer is set>"]
+    assert notifications == [
+        "<start at 12:00 PM>",
+        "<Time is up! at 12:05 PM>",
+    ]
     assert launcher.query("") == [
         "<start / Time left: 3 seconds>",
         "<Time is up! / Time left: 5 minutes>",

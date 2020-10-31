@@ -1,7 +1,9 @@
 from contextlib import contextmanager
+from datetime import timedelta
 from itertools import count
 from unittest.mock import patch
 
+from freezegun import freeze_time
 from gi.repository import GLib
 
 from timer.TimerLoop import TimerLoop
@@ -25,6 +27,7 @@ def timer_loop():
         timeouts.pop(tag, None)
 
     def run(seconds):
+        frozen_time.tick(timedelta(seconds=seconds))
         for tag, timeout in list(timeouts.items()):
             timeout[0] -= seconds
             interval, function, data = timeout
@@ -40,7 +43,8 @@ def timer_loop():
     loop.run = run
     try:
         with patch.object(GLib, "timeout_add_seconds", timeout_add_seconds), \
-                patch.object(GLib, "source_remove", source_remove):
+                patch.object(GLib, "source_remove", source_remove), \
+                freeze_time("12pm") as frozen_time:
             yield loop
     finally:
         loop.quit()
