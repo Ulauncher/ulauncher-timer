@@ -38,7 +38,7 @@ ULAUNCHER_PTH=$(python -c 'import site; print(site.getsitepackages()[0])')/ulaun
 realpath Ulauncher > $ULAUNCHER_PTH
 
 pip install websocket-client python-Levenshtein
-pip install pytest pytest-pep8
+pip install pytest pytest-pep8 freezegun
 ```
 
 Run tests

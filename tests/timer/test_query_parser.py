@@ -1,6 +1,7 @@
 import pytest
+from freezegun import freeze_time
+
 from timer.query_parser import parse_query, ParseQueryError
-from tests.timer.util import patch_now
 
 
 def test_parse_query__5m_hello_world__correct_result_returned():
@@ -56,7 +57,7 @@ def secs(hours, minutes=0):
     ("1156a", secs(23, 56)),
     ("1203a", secs(0, 3)),
 ])
-@patch_now
+@freeze_time("12pm")
 def test_parse_query__absolute_time__correct_result_returned(query, result):
     assert parse_query(f'{query} hello') == (result, query, 'hello')
 
@@ -67,7 +68,7 @@ def test_parse_query__absolute_time__correct_result_returned(query, result):
     ("25am", "Bad time value: 25am"),
     ("560p", "Bad time value: 560p")
 ])
-@patch_now
+@freeze_time("12pm")
 def test_parse_query__absolute_time__error(query, message):
     with pytest.raises(ParseQueryError, match=message):
         value = parse_query(f'{query} hello')
