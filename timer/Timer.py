@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime, timedelta
+from itertools import count
 
 from gi.repository import Notify
 
@@ -7,6 +8,7 @@ from .media import get_icon_path, play_sound
 from .timediff_formatter import format_timediff, round_time_units
 
 log = logging.getLogger(__name__)
+ids = count()
 
 
 class Timer:
@@ -21,6 +23,7 @@ class Timer:
     """
 
     def __init__(self, run_seconds, name, callback, persistent=False):
+        self.id = next(ids)
         self.run_seconds = run_seconds
         self.name = name
         self.callback = callback
@@ -46,18 +49,20 @@ class Timer:
             self.stop(loop)
 
         self.tag = loop.call_after_delay(self.run_seconds, on_end, on_close)
-        message = f"{self.name} at {self.end_time.strftime('%-I:%M %p')}"
-        self.notify(message, sound=False)
+        self.notify(self.description, sound=False)
         log.debug('Timer set for %s', self.end_time)
 
-    def stop(self, loop):
+    def stop(self, loop, notify=False):
         if self.tag is not None:
             loop.cancel_callback(self.tag)
+            if notify:
+                self.notify("Timer stopped", self.description, sound=False)
+                loop.call_after_delay(5, self.notification.close)
             self.tag = None
 
     @property
-    def time_remaining(self):
-        return self.end_time - datetime.now()
+    def description(self):
+        return f"{self.name} at {self.end_time.strftime('%-I:%M %p')}"
 
     @property
     def time_since_end(self):

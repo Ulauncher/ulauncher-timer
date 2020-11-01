@@ -27,6 +27,7 @@ The timer extension accepts times in two formats:
 
 Choose _Alert periodically until closed_ in settings to make timers harder to
 ignore. Close the timer notification to stop persistent timer notifications.
+A timer can also be stopped by selecting it with Ulauncher.
 
 ## Running tests
 

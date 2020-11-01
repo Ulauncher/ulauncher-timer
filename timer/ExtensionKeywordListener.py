@@ -5,7 +5,6 @@ from ulauncher.api.shared.action.DoNothingAction import DoNothingAction
 from ulauncher.api.shared.action.ExtensionCustomAction import ExtensionCustomAction
 from .media import ICON_FILE
 from .query_parser import parse_query, ParseQueryError
-from .timediff_formatter import format_timediff
 
 
 class ExtensionKeywordListener(EventListener):
@@ -21,12 +20,12 @@ class ExtensionKeywordListener(EventListener):
 
         return RenderResultListAction([item])
 
-    def get_timer_item(self, timer, on_enter=None):
-        time_remaining = format_timediff(timer.time_remaining)
-        return ExtensionResultItem(name=timer.name,
-                                   description=f"Time left: {time_remaining}",
+    def get_timer_item(self, timer):
+        data = ("stop", timer.id)
+        return ExtensionResultItem(name=timer.description,
+                                   description="Select to stop",
                                    icon=ICON_FILE,
-                                   on_enter=on_enter or DoNothingAction())
+                                   on_enter=ExtensionCustomAction(data))
 
     def on_event(self, event, extension):
         query = event.get_argument()
@@ -34,9 +33,10 @@ class ExtensionKeywordListener(EventListener):
         if query:
             try:
                 time_sec, delta, message = parse_query(query)
+                data = ("set", (time_sec, message))
                 return self.get_action_to_render(name="Set timer for %s" % delta,
                                                  description="Message: %s" % message,
-                                                 on_enter=ExtensionCustomAction((time_sec, message)))
+                                                 on_enter=ExtensionCustomAction(data))
             except ParseQueryError:
                 return self.get_action_to_render(name="Incorrect request",
                                                  description="Example: ti 10m Eggs are ready!")

@@ -48,7 +48,7 @@ class MockGtk:
 class MockGLib:
 
     def timeout_add_seconds(interval, function, *data):
-        pass
+        return -1
 
     def source_remove(tag):
         pass

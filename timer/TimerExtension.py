@@ -36,10 +36,12 @@ class TimerExtension(Extension):
         timer.start(self.loop)
         self.timers.add(timer)
 
-    def stop_timer(self, timer):
-        log.debug("stop timer %s", timer.name)
-        timer.stop(self.loop)
-        self.timers.remove(timer)
+    def stop_timer(self, timer_id):
+        timer = self.get_timer(timer_id)
+        if timer is not None:
+            log.debug("stop timer %s", timer.name)
+            timer.stop(self.loop, notify=True)
+            self.timers.remove(timer)
 
     def on_timer_end(self, timer):
         log.debug("end timer %s", timer.name)
@@ -47,6 +49,13 @@ class TimerExtension(Extension):
 
     def get_timers(self):
         return sorted(self.timers, key=lambda t: t.end_time)
+
+    def get_timer(self, timer_id):
+        for timer in self.timers:
+            if timer.id == timer_id:
+                return timer
+        log.debug("timer %s not found", timer_id)
+        return None
 
     def quit(self):
         log.debug("quit timer extension")

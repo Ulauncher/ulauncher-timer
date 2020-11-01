@@ -21,7 +21,7 @@ class TimerLauncher:
     def __exit__(self, *exc_info):
         tx = self.timer
         for timer in tx.get_timers():
-            tx.stop_timer(timer)
+            tx.stop_timer(timer.id)
         tx.quit()
         assert not tx.timers, tx.timers
 
