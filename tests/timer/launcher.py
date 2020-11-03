@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from contextlib import ExitStack
 
 from ulauncher.api.shared.event import ItemEnterEvent, KeywordQueryEvent
 from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
@@ -6,16 +7,29 @@ from ulauncher.search.Query import Query
 
 from timer.TimerExtension import TimerExtension
 
+from .loop import timer_loop
+from .sounds import sound
+
 
 class TimerLauncher:
 
-    def __init__(self):
+    def __init__(self, persistent=False):
         self.timer = TimerExtension()
-        self.timer.preferences["persistent"] = False
+        self.timer.preferences["persistent"] = persistent
         self.timer.icon_path = "unknown"
+        self.timer.loop.quit()
         self.client = self.timer._client = TestClient()
+        self.loop_context = timer_loop()
+        self.sound_context = sound()
+        self.stack = ExitStack()
+        self.sounds = None
+
+    def __call__(self):
+        return self
 
     def __enter__(self):
+        self.timer.loop = self.stack.enter_context(self.loop_context)
+        self.sounds = self.stack.enter_context(self.sound_context)
         return self
 
     def __exit__(self, *exc_info):
@@ -23,6 +37,7 @@ class TimerLauncher:
         for timer in tx.get_timers():
             tx.stop_timer(timer.id)
         tx.quit()
+        self.stack.close()
         assert not tx.timers, tx.timers
 
     def query(self, query: str):

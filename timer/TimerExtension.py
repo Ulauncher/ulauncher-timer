@@ -45,7 +45,7 @@ class TimerExtension(Extension):
 
     def on_timer_end(self, timer):
         log.debug("end timer %s", timer.name)
-        self.timers.remove(timer)
+        self.timers.discard(timer)
 
     def get_timers(self):
         return sorted(self.timers, key=lambda t: t.end_time)
