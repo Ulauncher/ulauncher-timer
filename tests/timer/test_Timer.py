@@ -1,4 +1,5 @@
 import pytest
+from threading import Event, Thread
 
 from timer.Timer import Timer
 
@@ -71,3 +72,40 @@ def test_long_overdue_persistent_timer(loop, notifications, sounds, elapsed, msg
     assert notifications[-1] == msg
     notifications[-1].close()
     assert not timers
+
+
+@using(timer_loop, notify, sound)
+def test_persistent_timer_notification_race(loop, notifications, sounds):
+    # should not continue to alert if timer is stopped while on_end()
+    # callback is executing (likely playing notification sound)
+    def loop_runner():
+        # will block on notify
+        loop.run(4)
+        # these should not notify, but did before bug was fixed
+        loop.run(10)
+        loop.run(10)
+        loop.run(10)
+
+    def blocking_notify(*args, **kw):
+        notify_event.set()
+        if not stop_event.wait(1):
+            pytest.fail("unexpected timeout waiting for stop")
+        real_notify(*args, **kw)
+
+    timer = Timer(3, "Race!", (lambda x: None), persistent=True)
+    timer.start(loop)
+    assert notifications == ["<Race! at 12:00 PM>"]
+
+    real_notify = timer.notify
+    timer.notify = blocking_notify
+    notify_event = Event()
+    stop_event = Event()
+
+    thread = Thread(target=loop_runner)
+    thread.start()
+    if not notify_event.wait(1):
+        pytest.fail("unexpected timeout waiting for notify")
+    timer.stop(loop)
+    stop_event.set()
+    thread.join()
+    assert notifications == ["<Race! at 12:00 PM>", "<Race!>"]
