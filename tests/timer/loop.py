@@ -32,7 +32,7 @@ def timer_loop():
             timeout[0] -= seconds
             interval, function, data = timeout
             if interval <= 0:
-                timeouts.pop(tag)
+                timeouts.pop(tag, None)
                 repeat = function(*data)
                 assert repeat is False
 

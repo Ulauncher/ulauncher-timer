@@ -54,6 +54,7 @@ class Timer:
 
     def stop(self, loop, notify=False):
         if self.tag is not None:
+            self.persistent = False  # prevent unstoppable on_end() calls
             loop.cancel_callback(self.tag)
             if notify:
                 self.notify("Timer stopped", self.description, sound=False)
