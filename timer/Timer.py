@@ -2,6 +2,7 @@ import logging
 from datetime import datetime, timedelta
 from itertools import count
 
+import gi
 from gi.repository import Notify
 
 from .media import get_icon_path, play_sound
@@ -38,15 +39,20 @@ class Timer:
             self.notify(self.name, self.time_since_end, on_close=on_close)
             if self.persistent:
                 interval = self.intervals.pop() if self.intervals else 60
+                log.debug(f"Notification sleeping for {interval} seconds...")
                 self.tag = loop.call_after_delay(interval, on_end)
             else:
                 self.callback(self)
                 self.tag = None
 
         def on_close(arg):
-            log.debug("notification closed")
-            self.callback(self)
-            self.stop(loop)
+            # https://gnome.pages.gitlab.gnome.org/libnotify/enum.ClosedReason.html
+            reason = self.notification.get_closed_reason()  # 1: timeout, 2: dismissed by the user
+            log.debug("notification closed" + (" by user" if reason == 2 else ''))
+            if reason == 2:
+                # Closed by user, stopping this timer
+                self.stop(loop)
+                self.callback(self)
 
         self.tag = loop.call_after_delay(self.run_seconds, on_end, on_close)
         self.notify(self.description, sound=False)
