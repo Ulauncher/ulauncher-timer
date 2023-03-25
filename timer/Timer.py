@@ -70,7 +70,7 @@ class Timer:
 
     @property
     def description(self):
-        return f"{self.name} at {self.end_time.strftime('%-I:%M %p')}"
+        return f"{self.name} at {self.end_time.strftime('%-H:%M %p')}"
 
     @property
     def time_since_end(self):
